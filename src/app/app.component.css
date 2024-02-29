@@ -1,0 +1,9 @@
+.overflow-container {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.border-right {
+  border-right: 1px solid grey; /* Adjust border color and width as needed */
+}

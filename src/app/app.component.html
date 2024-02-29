@@ -2,81 +2,106 @@
   <h2>Company Management</h2>
   <mat-tab-group>
     <mat-tab label="Search for a company" [disabled]="loading">
-      <div class="d-flex">
+      <h3>Search for a company</h3>
+      <div class="d-flex mt-3">
         <!-- Left half -->
         <div class="col-md-6">
-          <div>
-            <h3>Search for a company</h3>
-            <div class="container border-right">
-              <form (ngSubmit)="submitForm()" #companyForm="ngForm">
-                <div class="form-group mt-3">
-                  <label for="commercialName">Commercial Name:</label>
-                  <input type="text" class="form-control mt-2" id="commercialName" name="commercialName" [(ngModel)]="company.commercialName" required>
-                </div>
-                <div class="form-group mt-3">
-                  <label for="legalName">Legal Name:</label>
-                  <input type="text" class="form-control mt-2" id="legalName" name="legalName" [(ngModel)]="company.legalName">
-                </div>
-                <div class="form-group mt-3">
-                  <label for="allAvailableNames">All Available Names:</label>
-                  <input type="text" class="form-control mt-2" id="allAvailableNames" name="allAvailableNames" [(ngModel)]="company.allAvailableNames">
-                </div>
-                <div class="form-group mt-3">
-                  <label for="phoneNumbers">Phone Numbers:</label>
-                  <input type="text" class="form-control mt-2" id="phoneNumbers" name="phoneNumbers" [(ngModel)]="company.phoneNumbers">
-                </div>
-                <div class="form-group mt-3">
-                  <label for="socialMediaLinks">Social Media Links:</label>
-                  <input type="text" class="form-control mt-2" id="socialMediaLinks" name="socialMediaLinks" [(ngModel)]="company.socialMediaLinks">
-                </div>
-                <div class="form-group mt-3">
-                  <label for="address">Address:</label>
-                  <input type="text" class="form-control mt-2" id="address" name="address" [(ngModel)]="company.address">
-                </div>
-                <div class="form-group mt-3">
-                  <label for="url">URL:</label>
-                  <input type="text" class="form-control mt-2" id="url" name="url" [(ngModel)]="company.url">
-                </div>
-                <button type="submit" class="btn btn-outline-secondary mt-4">Test Company Endpoint</button>
-              </form>
-            </div>
+          <div class="container border-right">
+            <form (ngSubmit)="submitForm()" #companyForm="ngForm">
+              <div class="form-group mt-3">
+                <label for="commercialName">Commercial Name:</label>
+                <input type="text" class="form-control mt-2" id="commercialName" name="commercialName" [(ngModel)]="company.commercialName" required>
+              </div>
+              <div class="form-group mt-3">
+                <label for="legalName">Legal Name:</label>
+                <input type="text" class="form-control mt-2" id="legalName" name="legalName" [(ngModel)]="company.legalName">
+              </div>
+              <div class="form-group mt-3">
+                <label for="allAvailableNames">All Available Names:</label>
+                <input type="text" class="form-control mt-2" id="allAvailableNames" name="allAvailableNames" [(ngModel)]="company.allAvailableNames">
+              </div>
+              <div class="form-group mt-3">
+                <label for="phoneNumbers">Phone Numbers:</label>
+                <input type="text" class="form-control mt-2" id="phoneNumbers" name="phoneNumbers" [(ngModel)]="company.phoneNumbers">
+              </div>
+              <div class="form-group mt-3">
+                <label for="socialMediaLinks">Social Media Links:</label>
+                <input type="text" class="form-control mt-2" id="socialMediaLinks" name="socialMediaLinks" [(ngModel)]="company.socialMediaLinks">
+              </div>
+              <div class="form-group mt-3">
+                <label for="address">Address:</label>
+                <input type="text" class="form-control mt-2" id="address" name="address" [(ngModel)]="company.address">
+              </div>
+              <div class="form-group mt-3">
+                <label for="url">URL:</label>
+                <input type="text" class="form-control mt-2" id="url" name="url" [(ngModel)]="company.url">
+              </div>
+              <button type="submit" class="btn btn-outline-secondary mt-4">Test Company Endpoint</button>
+            </form>
           </div>
         </div>
         <div class="container col-md-6 d-flex justify-content-center align-items-center">
-          <!-- Display the received company in JSON format -->
+          <!-- Display the received company information -->
           <mat-spinner color="primary" *ngIf="loading"></mat-spinner>
-          <div *ngIf="!loading">
-            <h3 *ngIf="!receivedCompany">Received Company</h3>
-            <pre *ngIf="receivedCompany">{{ receivedCompany | json }}</pre>
+          <div *ngIf="!loading" class="overflow-container" style="max-height: 550px; overflow-y: auto">
+            <!-- Display the best match company -->
+            <h3 *ngIf="receivedCompany && receivedCompany.is_a_match">{{ receivedCompany.is_a_match }}</h3>
+            <h3 *ngIf="receivedCompany && receivedCompany.best_match_company">Best Match Company</h3>
+            <pre *ngIf="receivedCompany && receivedCompany.best_match_company">{{ receivedCompany.best_match_company | json }}</pre>
+
+            <!-- Display the Algolia company -->
+            <h3 *ngIf="receivedCompany && receivedCompany.algolia_company">Algolia Company</h3>
+            <pre *ngIf="receivedCompany && receivedCompany.algolia_company">{{ receivedCompany.algolia_company | json }}</pre>
+
+            <!-- Display the top 10 companies -->
+            <h3 *ngIf="receivedCompany && receivedCompany.top_10_companies">Top 10 Companies</h3>
+            <div *ngIf="receivedCompany && receivedCompany.top_10_companies">
+              <div *ngFor="let company of receivedCompany.top_10_companies"><pre>{{ company | json }}</pre></div>
+            </div>
           </div>
         </div>
+
       </div>
     </mat-tab>
 
-    <mat-tab label="Crawl CSV" [disabled]="loading">
-      <div class="container d-flex flex-column">
-        <h3>Crawl CSV</h3>
-        <div class="mt-3">
-          <mat-form-field>
-            <mat-label>File</mat-label>
-            <input matInput placeholder="Choose CSV file" disabled [(ngModel)]="selectedFileName">
-            <mat-icon matSuffix>folder</mat-icon>
-          </mat-form-field>
-          <input type="file" (change)="onFileSelected($event)" style="display: none" #fileInput>
-          <button class="btn btn-outline-secondary m-4" (click)="fileInput.click()">Choose File</button>
+    <mat-tab label="Crawl" [disabled]="loading">
+      <h3>Crawl CSV</h3>
+      <div class="d-flex">
+        <div class="col-md-6 mt-3">
+          <div class="container border-right">
+            <div class="mt-3">
+              <mat-form-field>
+                <mat-label>File</mat-label>
+                <input matInput placeholder="Choose CSV file" disabled [(ngModel)]="selectedFileName">
+                <mat-icon matSuffix>folder</mat-icon>
+              </mat-form-field>
+              <input type="file" (change)="onFileSelected($event)" style="display: none" #fileInput>
+              <button class="btn btn-outline-secondary m-4" (click)="fileInput.click()">Choose File</button>
+            </div>
+            <div class="mt-3">
+              <button class="btn btn-outline-secondary" (click)="crawlCSV()" [disabled]="loading">Crawl CSV</button>
+              <!-- Loading spinner -->
+              <mat-spinner color="primary" class="mt-4" *ngIf="loading"></mat-spinner>
+            </div>
+          </div>
         </div>
-        <div class="mt-3">
-          <button class="btn btn-outline-secondary" (click)="crawlCSV()" [disabled]="loading">Crawl</button>
-          <!-- Loading spinner -->
-          <mat-spinner color="primary" class="mt-4" *ngIf="loading"></mat-spinner>
+        <div class="container mt-3 col-md-6 d-grid align-items-center justify-content-center">
+            <mat-form-field class="mt-3">
+              <mat-label>URL</mat-label>
+              <input matInput placeholder="Enter URL" [(ngModel)]="crawlURL">
+            </mat-form-field>
+            <div class="mt-3">
+              <button class="btn btn-outline-secondary" (click)="crawlCSV(crawlURL)" [disabled]="loading">Crawl URL</button>
+            </div>
         </div>
       </div>
     </mat-tab>
+
 
     <mat-tab label="Merge CSV" [disabled]="loading">
-      <div class="container d-flex flex-column">
-        <h3>Merge CSV</h3>
-        <div class="mt-3">
+      <h3>Merge CSV</h3>
+      <div class="container d-flex row mt-4">
+        <div class="mt-4">
           <mat-form-field >
             <mat-label>File</mat-label>
             <input matInput placeholder="Choose CSV file" disabled [(ngModel)]="selectedFileName">

@@ -21,6 +21,8 @@ export class AppComponent {
   selectedFile: File | null = null;
   selectedFileName: string = ''; // Variable to hold the selected file name
   loading: boolean = false; // Loading flag for crawling
+  crawlURL: string = '';
+
 
   constructor(private http: HttpClient) {}
 
@@ -85,33 +87,62 @@ export class AppComponent {
     }
   }
 
-  crawlCSV() {
+  crawlCSV(url?: string) {
     const startTime = Date.now(); // Record the start time before making the request
 
-    if (this.selectedFile) {
+    if (url) {
+      // Crawl the provided URL
       this.loading = true; // Show loading animation for crawling
-      const formData = new FormData();
-      formData.append('file', this.selectedFile);
 
-      this.http.post<any>('http://localhost:8080/api/company/crawl', formData, { responseType: 'blob' as 'json' })
+      this.http.post<any>('http://localhost:8080/api/company/crawl', null, {
+        params: {
+          url: url
+        },
+        responseType: 'blob' as 'json'
+      })
         .subscribe(
           (response: any) => {
-            this.downloadFile(response, 'companies_');
+            this.downloadFile(response, 'company_');
             const endTime = Date.now(); // Record the end time upon receiving the response
             const elapsedTime = (endTime - startTime) / 1000; // Calculate elapsed time in seconds
-            this.responseMessage = `CSV crawled and downloaded successfully! Time elapsed: ${elapsedTime} seconds.`;
+            this.responseMessage = `URL crawled and company downloaded successfully! Time elapsed: ${elapsedTime} seconds.`;
             this.loading = false; // Hide loading animation after crawling
           },
           error => {
             console.error(error);
-            this.responseMessage = 'Error crawling CSV!';
+            this.responseMessage = 'Error crawling URL!';
             this.loading = false; // Hide loading animation after crawling
           }
         );
     } else {
-      this.responseMessage = 'Please select a CSV file to crawl.';
+      // Crawl the CSV file
+      if (this.selectedFile) {
+        this.loading = true; // Show loading animation for crawling
+        const formData = new FormData();
+        formData.append('file', this.selectedFile);
+
+        this.http.post<any>('http://localhost:8080/api/company/crawl', formData, { responseType: 'blob' as 'json' })
+          .subscribe(
+            (response: any) => {
+              this.downloadFile(response, 'companies_');
+              const endTime = Date.now(); // Record the end time upon receiving the response
+              const elapsedTime = (endTime - startTime) / 1000; // Calculate elapsed time in seconds
+              this.responseMessage = `CSV crawled and downloaded successfully! Time elapsed: ${elapsedTime} seconds.`;
+              this.loading = false; // Hide loading animation after crawling
+            },
+            error => {
+              console.error(error);
+              this.responseMessage = 'Error crawling CSV!';
+              this.loading = false; // Hide loading animation after crawling
+            }
+          );
+      } else {
+        this.responseMessage = 'Please select a CSV file to crawl.';
+      }
     }
   }
+
+
 
   private downloadFile(data: any, filename: string) {
     const formattedDate = this.getFormattedDate();

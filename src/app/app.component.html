@@ -4,7 +4,6 @@
     <mat-tab label="Search for a company" [disabled]="loading">
       <h3>Search for a company</h3>
       <div class="d-flex mt-3">
-        <!-- Left half -->
         <div class="col-md-6">
           <div class="container border-right">
             <form (ngSubmit)="submitForm()" #companyForm="ngForm">
@@ -41,19 +40,15 @@
           </div>
         </div>
         <div class="container col-md-6 d-flex justify-content-center align-items-center">
-          <!-- Display the received company information -->
           <mat-spinner color="primary" *ngIf="loading"></mat-spinner>
           <div *ngIf="!loading" class="overflow-container" style="max-height: 550px; overflow-y: auto">
-            <!-- Display the best match company -->
             <h3 *ngIf="receivedCompany && receivedCompany.is_a_match">{{ receivedCompany.is_a_match }}</h3>
             <h3 *ngIf="receivedCompany && receivedCompany.best_match_company">Best Match Company</h3>
             <pre *ngIf="receivedCompany && receivedCompany.best_match_company">{{ receivedCompany.best_match_company | json }}</pre>
 
-            <!-- Display the Algolia company -->
             <h3 *ngIf="receivedCompany && receivedCompany.algolia_company">Algolia Company</h3>
             <pre *ngIf="receivedCompany && receivedCompany.algolia_company">{{ receivedCompany.algolia_company | json }}</pre>
 
-            <!-- Display the top 10 companies -->
             <h3 *ngIf="receivedCompany && receivedCompany.top_10_companies">Top 10 Companies</h3>
             <div *ngIf="receivedCompany && receivedCompany.top_10_companies">
               <div *ngFor="let company of receivedCompany.top_10_companies"><pre>{{ company | json }}</pre></div>
@@ -80,7 +75,6 @@
             </div>
             <div class="mt-3">
               <button class="btn btn-outline-secondary" (click)="crawlCSV()" [disabled]="loading">Crawl CSV</button>
-              <!-- Loading spinner -->
               <mat-spinner color="primary" class="mt-4" *ngIf="loading"></mat-spinner>
             </div>
           </div>
@@ -92,6 +86,7 @@
             </mat-form-field>
             <div class="mt-3">
               <button class="btn btn-outline-secondary" (click)="crawlCSV(crawlURL)" [disabled]="loading">Crawl URL</button>
+              <mat-spinner color="primary" class="mt-4" *ngIf="loading"></mat-spinner>
             </div>
         </div>
       </div>
@@ -118,7 +113,6 @@
     </mat-tab>
   </mat-tab-group>
 
-  <!-- Display response message here -->
   <p class="text-secondary fw-bold mt-3">{{ responseMessage }}</p>
 </div>
 

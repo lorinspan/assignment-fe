@@ -17,17 +17,16 @@ export class AppComponent {
     url: ''
   };
   responseMessage: string = '';
-  receivedCompany: any; // Variable to hold the received company
+  receivedCompany: any;
   selectedFile: File | null = null;
-  selectedFileName: string = ''; // Variable to hold the selected file name
-  loading: boolean = false; // Loading flag for crawling
+  selectedFileName: string = '';
+  loading: boolean = false;
   crawlURL: string = '';
-
 
   constructor(private http: HttpClient) {}
 
   submitForm() {
-    const startTime = Date.now(); // Record the start time before making the request
+    const startTime = Date.now();
     this.loading = true;
     const httpOptions = {
       headers: new HttpHeaders({
@@ -40,10 +39,10 @@ export class AppComponent {
         response => {
           console.log(response);
           this.loading = false;
-          const endTime = Date.now(); // Record the end time upon receiving the response
-          const elapsedTime = (endTime - startTime) / 1000; // Calculate elapsed time in seconds
+          const endTime = Date.now();
+          const elapsedTime = (endTime - startTime) / 1000;
           this.responseMessage = `Company matched successfully! Time elapsed: ${elapsedTime} seconds.`;
-          this.receivedCompany = response; // Store the received company
+          this.receivedCompany = response;
         },
         error => {
           this.loading = false;
@@ -54,15 +53,12 @@ export class AppComponent {
       );
   }
 
-
   onFileSelected(event: any) {
     this.selectedFile = event.target.files[0];
     this.selectedFileName = event.target.files[0].name;
   }
 
   uploadFile() {
-    const startTime = Date.now(); // Record the start time before making the request
-
     if (this.selectedFile) {
       this.loading = true;
       const formData = new FormData();
@@ -88,11 +84,10 @@ export class AppComponent {
   }
 
   crawlCSV(url?: string) {
-    const startTime = Date.now(); // Record the start time before making the request
+    const startTime = Date.now();
 
     if (url) {
-      // Crawl the provided URL
-      this.loading = true; // Show loading animation for crawling
+      this.loading = true;
 
       this.http.post<any>('http://localhost:8080/api/company/crawl', null, {
         params: {
@@ -103,21 +98,20 @@ export class AppComponent {
         .subscribe(
           (response: any) => {
             this.downloadFile(response, 'company_');
-            const endTime = Date.now(); // Record the end time upon receiving the response
-            const elapsedTime = (endTime - startTime) / 1000; // Calculate elapsed time in seconds
+            const endTime = Date.now();
+            const elapsedTime = (endTime - startTime) / 1000;
             this.responseMessage = `URL crawled and company downloaded successfully! Time elapsed: ${elapsedTime} seconds.`;
-            this.loading = false; // Hide loading animation after crawling
+            this.loading = false;
           },
           error => {
             console.error(error);
             this.responseMessage = 'Error crawling URL!';
-            this.loading = false; // Hide loading animation after crawling
+            this.loading = false;
           }
         );
     } else {
-      // Crawl the CSV file
       if (this.selectedFile) {
-        this.loading = true; // Show loading animation for crawling
+        this.loading = true;
         const formData = new FormData();
         formData.append('file', this.selectedFile);
 
@@ -125,15 +119,15 @@ export class AppComponent {
           .subscribe(
             (response: any) => {
               this.downloadFile(response, 'companies_');
-              const endTime = Date.now(); // Record the end time upon receiving the response
-              const elapsedTime = (endTime - startTime) / 1000; // Calculate elapsed time in seconds
+              const endTime = Date.now();
+              const elapsedTime = (endTime - startTime) / 1000;
               this.responseMessage = `CSV crawled and downloaded successfully! Time elapsed: ${elapsedTime} seconds.`;
-              this.loading = false; // Hide loading animation after crawling
+              this.loading = false;
             },
             error => {
               console.error(error);
               this.responseMessage = 'Error crawling CSV!';
-              this.loading = false; // Hide loading animation after crawling
+              this.loading = false;
             }
           );
       } else {
@@ -141,8 +135,6 @@ export class AppComponent {
       }
     }
   }
-
-
 
   private downloadFile(data: any, filename: string) {
     const formattedDate = this.getFormattedDate();
@@ -163,7 +155,7 @@ export class AppComponent {
     const now = new Date();
     const hhmm = this.padZero(now.getHours()) + this.padZero(now.getMinutes());
     const dd = this.padZero(now.getDate());
-    const mm = this.padZero(now.getMonth() + 1); // Months are zero based
+    const mm = this.padZero(now.getMonth() + 1);
     const yyyy = now.getFullYear();
     return `${hhmm}_${dd}${mm}${yyyy}`;
   }
